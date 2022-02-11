@@ -1,0 +1,2 @@
+EMPTY_SYMBOL = '-'
+TUBE_HEIGHT = 4

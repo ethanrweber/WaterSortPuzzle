@@ -1,45 +1,10 @@
+from functools import cache
 from typing import List
+
+from Node import Node
 from tube import Tube
 from constants import TUBE_HEIGHT, EMPTY_SYMBOL
 from copy import deepcopy
-
-
-class Node:
-    def __init__(self, tube_array: List[Tube], tube_count, empty_tube_count):
-        self.data = tube_array
-        self.tube_count = tube_count
-        self.empty_tube_count = empty_tube_count
-
-        if not self.is_valid():
-            raise Exception("Invalid Puzzle")
-
-    def __str__(self):
-        if len(self.data) == 0:
-            return ''
-        return ''.join(sorted(str(tube) for tube in self.data))
-
-    def is_valid(self):
-        # a puzzle is valid iff each color type appears in exactly 4 quarters total out of all tubes
-        colors = dict()
-        for tube in self.data:
-            for color in tube.data:
-                if color == EMPTY_SYMBOL:
-                    continue
-
-                if color in colors:
-                    colors[color] += 1
-                else:
-                    colors[color] = 1
-
-        for color in colors:
-            if colors[color] != TUBE_HEIGHT:
-                return False
-        return True
-
-    def is_solved(self):
-        # conditions for a solved puzzle:
-        # any single tube in the puzzle is either empty or filled completely with only one liquid type
-        return all(map(lambda tube: tube.is_solved(), self.data))
 
 
 class Graph:
@@ -69,38 +34,46 @@ class Graph:
 
         return Node(final_tubes, self.tube_count, number_empty_tubes)
 
-    def is_solvable(self, start_node: Node):
-        # solve the puzzle (?):
+    def solve(self, start_node: Node, path: List[Node]) -> (bool, Node):
+        """
+        solves the puzzle
+        :param start_node:
+        :param path:
+        :return: (boolean: was the puzzle solved?, path: the list of nodes iterated through to solve the puzzle)
+        """
 
         # base case: if puzzle is solved, stop
         if start_node.is_solved():
-            return True
+            return True, path[-1]
+
+        # detect loops: if current node has already been detected, stop recursing
+        if start_node in path and path.index(start_node) != len(path) - 1:
+            return False, path[-1]
 
         # iterate through all possible moves
-        result = False
         for i, tube_one in enumerate(start_node.data):
-            if result:
-                break
-            for j, tube_two in enumerate(start_node.data, start=(i+1)):
+            for j, tube_two in enumerate(start_node.data[i+1:], start=(i+1)):
                 # check if liquid can be moved from tube one to tube two OR vice versa
                 if tube_one.can_move_liquid_into(tube_two):
                     # deepcopy node
                     copy_node = deepcopy(start_node)
-                    # move liquid in copied node
+                    # move liquid in copied node and update path description
+                    copy_node.description_of_moves += f"Moved liquid from Tube {i + 1} ({tube_one}) to Tube {j + 1} ({tube_two})\n"
                     copy_node.data[i].move_liquid(copy_node.data[j])
                     # recurse solve
-                    result = result or self.is_solvable(copy_node)
+                    result, final_node = self.solve(copy_node, path + [copy_node])
                     if result:
-                        break
+                        return True, final_node
                 if tube_two.can_move_liquid_into(tube_one):
                     # deepcopy node
                     copy_node = deepcopy(start_node)
                     # move liquid in copied node
+                    copy_node.description_of_moves += f"Moved liquid from Tube {j + 1} ({tube_two}) to Tube {i + 1} ({tube_one})\n"
                     copy_node.data[j].move_liquid(copy_node.data[i])
                     # recurse solve
-                    result = result or self.is_solvable(copy_node)
+                    result, final_node = self.solve(copy_node, path + [copy_node])
                     if result:
-                        break
+                        return True, final_node
 
-        return result
+        return False, path[-1]
 

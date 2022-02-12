@@ -1,0 +1,13 @@
+color codes:
+- b: blue
+- o: orange
+- m: mint_green
+- r: brown
+- e: red
+- s: beige
+- y: yellow
+- g: gray
+- d: dark_green
+- p: pink
+- c: cyan
+- u: purple

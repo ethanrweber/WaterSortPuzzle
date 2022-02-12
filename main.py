@@ -38,5 +38,8 @@ if __name__ == '__main__':
     print('data inputted:')
     print(puzzle_graph.start_node)
 
+    print('is puzzle solvable?:')
+    print(puzzle_graph.is_solvable(puzzle_graph.start_node))
+
     print('solved state:')
     print(puzzle_graph.final_node)

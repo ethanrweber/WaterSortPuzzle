@@ -1,6 +1,7 @@
 from typing import List
 from tube import Tube
 from constants import TUBE_HEIGHT, EMPTY_SYMBOL
+from copy import deepcopy
 
 
 class Node:
@@ -15,7 +16,7 @@ class Node:
     def __str__(self):
         if len(self.data) == 0:
             return ''
-        return 'T'.join(sorted(str(tube) for tube in self.data)) + 'T' # T to delimit tubes
+        return ''.join(sorted(str(tube) for tube in self.data))
 
     def is_valid(self):
         # a puzzle is valid iff each color type appears in exactly 4 quarters total out of all tubes
@@ -40,30 +41,16 @@ class Node:
         # any single tube in the puzzle is either empty or filled completely with only one liquid type
         return all(map(lambda tube: tube.is_solved(), self.data))
 
-    def solve(self):
-        # solve the puzzle (?):
-        # turn tubes matrix into graph representation
-        #   turn each tube into a standard string representation
-        #   put the strings in order and concatenate them
-
-        # making a move:
-        # liquid cannot be moved into nor out of a filled tube
-        # liquid can be moved from one tube to another tube if the liquid at the top of both of tubes is the same type
-        #   when performing a move, as much of the liquid of the same type at the top of the tube is
-        #   transferred to the other tube, as long as the target tube has the capacity to hold the liquid
-
-        if not self.is_solved():
-            pass
-
-        return
-
 
 class Graph:
     def __init__(self, start_node: Node):
         self.start_node = start_node
+        # all nodes should have the same number of tubes
         self.tube_count = start_node.tube_count
 
         self.final_node = self.generate_final_state()
+
+        self.vertices = [self.start_node, self.final_node]
 
     def generate_final_state(self):
         # build the final state of the graph from the start state
@@ -82,5 +69,38 @@ class Graph:
 
         return Node(final_tubes, self.tube_count, number_empty_tubes)
 
+    def is_solvable(self, start_node: Node):
+        # solve the puzzle (?):
 
+        # base case: if puzzle is solved, stop
+        if start_node.is_solved():
+            return True
+
+        # iterate through all possible moves
+        result = False
+        for i, tube_one in enumerate(start_node.data):
+            if result:
+                break
+            for j, tube_two in enumerate(start_node.data, start=(i+1)):
+                # check if liquid can be moved from tube one to tube two OR vice versa
+                if tube_one.can_move_liquid_into(tube_two):
+                    # deepcopy node
+                    copy_node = deepcopy(start_node)
+                    # move liquid in copied node
+                    copy_node.data[i].move_liquid(copy_node.data[j])
+                    # recurse solve
+                    result = result or self.is_solvable(copy_node)
+                    if result:
+                        break
+                if tube_two.can_move_liquid_into(tube_one):
+                    # deepcopy node
+                    copy_node = deepcopy(start_node)
+                    # move liquid in copied node
+                    copy_node.data[j].move_liquid(copy_node.data[i])
+                    # recurse solve
+                    result = result or self.is_solvable(copy_node)
+                    if result:
+                        break
+
+        return result
 

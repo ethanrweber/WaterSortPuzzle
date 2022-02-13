@@ -1,6 +1,7 @@
 from constants import TUBE_HEIGHT, EMPTY_SYMBOL
-from graph import Node, Graph
-from tube import Tube
+from data.graph import Graph
+from data.node import Node
+from data.tube import Tube
 
 
 def receive_input():

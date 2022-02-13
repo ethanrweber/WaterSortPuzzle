@@ -1,7 +1,7 @@
 import unittest
 
-from graph import Graph, Node
-from tube import Tube
+from data.graph import Graph, Node
+from data.tube import Tube
 
 PRINT_DESCRIPTIONS = True
 
@@ -12,10 +12,14 @@ r = 'brown '
 e = 'red '
 s = 'beige '
 y = 'yellow '
-g = 'green '
+g = 'gray '
+d = 'dark_green '
 p = 'pink '
 c = 'cyan '
 u = 'purple '
+f = 'green '
+v = 'violet '
+
 
 class TestGraphMethods(unittest.TestCase):
     # Test Graph.solve()
@@ -172,6 +176,47 @@ class TestGraphMethods(unittest.TestCase):
             print('test case one hundred twelve:')
             print(result_node.description_of_moves)
 
+    def test_case_extra_one_hundred_seven(self):
+        puzzle = Graph(Node([
+            Tube([m, g, o, y]),
+            Tube([e, u, f, c]),
+            Tube([f, p, m, u]),
+            Tube([y, p, e, r]),
+            Tube([f, v, r, u]),
+            Tube([f, g, u, y]),
+            Tube([o, g, c, d]),
+            Tube([e, d, c, p]),
+            Tube([v, v, c, m]),
+            Tube([d, r, p, o]),
+            Tube([g, m, y, o]),
+            Tube([e, r, d, v]),
+            Tube([]),
+            Tube([])
+        ], 14, 2))
+
+        expected_result = Node([
+            Tube([]),
+            Tube([]),
+            Tube([m, m, m, m]),
+            Tube([g, g, g, g]),
+            Tube([e, e, e, e]),
+            Tube([f, f, f, f]),
+            Tube([d, d, d, d]),
+            Tube([v, v, v, v]),
+            Tube([u, u, u, u]),
+            Tube([c, c, c, c]),
+            Tube([o, o, o, o]),
+            Tube([y, y, y, y]),
+            Tube([r, r, r, r]),
+            Tube([p, p, p, p])
+        ], 14, 2)
+
+        solved, result_node = puzzle.solve(puzzle.start_node, [])
+        self.assertTrue(solved)
+        self.assertEqual(expected_result, result_node)
+        if PRINT_DESCRIPTIONS:
+            print('test case one hundred seven:')
+            print(result_node.description_of_moves)
 
 
 if __name__ == '__main__':

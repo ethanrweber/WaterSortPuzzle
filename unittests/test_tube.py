@@ -1,5 +1,5 @@
 import unittest
-from tube import Tube
+from data.tube import Tube
 from constants import EMPTY_SYMBOL
 
 # Some test cases assume constants.TUBE_HEIGHT = 4

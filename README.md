@@ -8,6 +8,8 @@ color codes:
 - y: yellow
 - g: gray
 - d: dark_green
+- f: green
 - p: pink
 - c: cyan
 - u: purple
+- v: violet

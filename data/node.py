@@ -1,7 +1,7 @@
 from typing import List
 
 from constants import EMPTY_SYMBOL, TUBE_HEIGHT
-from tube import Tube
+from data.tube import Tube
 
 
 class Node:

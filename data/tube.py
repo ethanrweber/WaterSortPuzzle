@@ -21,8 +21,8 @@ class Tube:
         colors = set(self.data)
         return self.data.count(self.data[0]) == TUBE_HEIGHT or len(colors) == 0
 
-    # def is_empty(self):
-    #     return all(x == EMPTY_SYMBOL for x in self.data)
+    def is_empty(self):
+        return all(x == EMPTY_SYMBOL for x in self.data)
 
     # return the liquid at the top of the tube and how many units it takes up
     def top(self):

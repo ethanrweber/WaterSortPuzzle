@@ -86,10 +86,14 @@ def draw_tubes(puzzle: Node):
         mouse_clicked = pg.mouse.get_pressed()[0]
         mouse_tube_collision = tube_graphic.tube_graphic.collidepoint(pg.mouse.get_pos())
         tube_empty = tube.is_empty()
-        can_raise_tube_visual_indicator = mouse_clicked and mouse_tube_collision and not tube_empty
 
-        if can_raise_tube_visual_indicator:
+        can_raise_tube_visual_indicator = False
+
+        if mouse_clicked and mouse_tube_collision and not tube_empty:
             tube_graphic.raise_visual_indicator()
+            can_raise_tube_visual_indicator = True
+        elif mouse_clicked and not mouse_tube_collision:
+            can_raise_tube_visual_indicator = False
 
         # draw the tube outline
         pg.draw.rect(window, COLORS["BLACK"], tube_graphic.tube_graphic, width=TUBE_BORDER_WIDTH,

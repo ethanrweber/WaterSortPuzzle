@@ -43,7 +43,7 @@ if __name__ == '__main__':
     result, final_node = puzzle_graph.solve(puzzle_graph.start_node, [])
     if result:
         print('solved successfully:')
-        print(final_node.description_of_moves)
+        print(final_node.description_of_moves())
 
     # print('solved state:')
     # print(puzzle_graph.final_node)

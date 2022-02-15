@@ -70,8 +70,6 @@ def detect_tube_selection(tube_graphic):
 
     if mouse_focused_on_game and left_mouse_clicked and mouse_tube_collision and not tube_empty:
         tube_graphic.raise_visual_indicator()
-    elif mouse_focused_on_game and left_mouse_clicked and not mouse_tube_collision:
-        tube_graphic.lower_visual_indicator()
 
 
 def detect_tube_target_and_deselection(target_tube_graphic: TubeGraphic, selected_tube_graphic: TubeGraphic):
@@ -81,26 +79,27 @@ def detect_tube_target_and_deselection(target_tube_graphic: TubeGraphic, selecte
         target_tube_graphic.lower_visual_indicator()
         return
 
+    # detect if user is clicking on tube
     mouse_focused_on_game = pg.mouse.get_focused() != 0
     left_mouse_clicked = pg.mouse.get_pressed()[0]
     mouse_tube_collision = target_tube_graphic.tube_graphic.collidepoint(pg.mouse.get_pos())
 
     if mouse_focused_on_game and left_mouse_clicked and mouse_tube_collision:
+        # transfer the liquid if possible
         if selected_tube_graphic.tube.can_move_liquid_into(target_tube_graphic.tube):
             selected_tube_graphic.tube.move_liquid(target_tube_graphic.tube)
             selected_tube_graphic.lower_visual_indicator()
+            # post event to redraw the tube colors as the content of the tube has changed
             pg.event.post(pg.event.Event(UPDATE_TUBE_EVENT))
 
 
 def detect_interactions(tube_graphics: List[TubeGraphic]):
     any_tube_selected = any(tg.is_selected for tg in tube_graphics)
-    if any_tube_selected:
-        selected_tube_graphic = [tg for tg in tube_graphics if tg.is_selected][0]
-
     for tube_graphic in tube_graphics:
         # only one tube can be selected at a time
         # if a tube is already selected, watch for another tube selection as the target tube to transfer liquids
         if any_tube_selected:
+            selected_tube_graphic = [tg for tg in tube_graphics if tg.is_selected][0]
             detect_tube_target_and_deselection(tube_graphic, selected_tube_graphic)
         else:
             detect_tube_selection(tube_graphic)
@@ -112,7 +111,8 @@ def draw_tube_colors(tube_graphic):
         drawing_last_color = color_idx == len(tube_graphic.tube.data) - 1
 
         # draw the section of liquid
-        color = COLORS[tube_graphic.tube.data[color_idx]]
+        corresponding_color = tube_graphic.tube.data[color_idx]
+        color = COLORS[corresponding_color]
         if drawing_last_color:
             pg.draw.rect(window, color, color_rect,
                          border_bottom_left_radius=TUBE_BORDER_RADIUS,
@@ -122,9 +122,7 @@ def draw_tube_colors(tube_graphic):
 
 
 def draw_tubes(tube_graphics: List[TubeGraphic]):
-    # draw each tube
-    for tube_idx, tube_graphic in enumerate(tube_graphics):
-
+    for tube_graphic in tube_graphics:
         # draw the tube outline
         pg.draw.rect(window, COLORS["BLACK"], tube_graphic.tube_graphic, width=TUBE_BORDER_WIDTH,
                      border_bottom_left_radius=TUBE_BORDER_RADIUS, border_bottom_right_radius=TUBE_BORDER_RADIUS)
@@ -136,7 +134,7 @@ def draw_tubes(tube_graphics: List[TubeGraphic]):
         draw_tube_colors(tube_graphic)
 
 
-def draw_window(tube_graphics: List[TubeGraphic], game_solved: bool):
+def draw_window(tube_graphics: List[TubeGraphic]):
     # set background color
     window.fill(BACKGROUND_COLOR)
 
@@ -151,11 +149,11 @@ def draw_win_text():
     draw_text = font.render('YOU WON!', True, COLORS["WHITE"])
     window.blit(draw_text, ((WIDTH - draw_text.get_width()) // 2, (HEIGHT - draw_text.get_height()) // 2))
     pg.display.update()
-    pg.time.delay(5000)
 
 
 def main():
     tube_graphics = create_tube_graphics(GAME_PUZZLE)
+    move_counter = 0
 
     # game setup
     clock = pg.time.Clock()
@@ -177,10 +175,11 @@ def main():
                 if all_solved:
                     game_solved = True
 
-        draw_window(tube_graphics, game_solved)
+        draw_window(tube_graphics)
 
         if game_solved:
             draw_win_text()
+            pg.time.delay(5000)
             run = False
 
 

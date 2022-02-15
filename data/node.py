@@ -9,7 +9,8 @@ class Node:
         self.data = tube_array
         self.tube_count = tube_count
         self.empty_tube_count = empty_tube_count
-        self.description_of_moves = ""
+        self.move_list = []
+        # self.description_of_moves = ""
 
         if not self.is_valid():
             raise Exception("Invalid Puzzle")
@@ -25,6 +26,9 @@ class Node:
 
     def __hash__(self):
         return hash(str(self))
+
+    def description_of_moves(self):
+        return '\n'.join(f"Moved liquid from Tube {i + 1} to Tube {j + 1}" for (i, j) in self.move_list)
 
     def is_valid(self):
         # a puzzle is valid iff each color type appears in exactly 4 quarters total out of all tubes

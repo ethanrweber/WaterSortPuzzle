@@ -40,7 +40,7 @@ class TestGraphMethods(unittest.TestCase):
         self.assertEqual(expected_result, result_node)
         if PRINT_DESCRIPTIONS:
             print('test case one:')
-            print(result_node.description_of_moves)
+            print(result_node.description_of_moves())
 
     def test_case_two(self):
         puzzle = Graph(Node([
@@ -60,7 +60,7 @@ class TestGraphMethods(unittest.TestCase):
         self.assertEqual(expected_result, result_node)
         if PRINT_DESCRIPTIONS:
             print('test case two:')
-            print(result_node.description_of_moves)
+            print(result_node.description_of_moves())
 
     def test_case_three(self):
         puzzle = Graph(Node([
@@ -84,7 +84,7 @@ class TestGraphMethods(unittest.TestCase):
         self.assertEqual(expected_result, result_node)
         if PRINT_DESCRIPTIONS:
             print('test case three:')
-            print(result_node.description_of_moves)
+            print(result_node.description_of_moves())
 
     def test_case_four(self):
         puzzle = Graph(Node([
@@ -108,7 +108,7 @@ class TestGraphMethods(unittest.TestCase):
         self.assertEqual(expected_result, result_node)
         if PRINT_DESCRIPTIONS:
             print('test case four:')
-            print(result_node.description_of_moves)
+            print(result_node.description_of_moves())
 
     def test_case_five(self):
         puzzle = Graph(Node([
@@ -136,7 +136,7 @@ class TestGraphMethods(unittest.TestCase):
         self.assertEqual(expected_result, result_node)
         if PRINT_DESCRIPTIONS:
             print('test case five:')
-            print(result_node.description_of_moves)
+            print(result_node.description_of_moves())
 
     def test_case_one_hundred_twelve(self):
         puzzle = Graph(Node([
@@ -174,7 +174,7 @@ class TestGraphMethods(unittest.TestCase):
         self.assertEqual(expected_result, result_node)
         if PRINT_DESCRIPTIONS:
             print('test case one hundred twelve:')
-            print(result_node.description_of_moves)
+            print(result_node.description_of_moves())
 
     def test_case_extra_one_hundred_seven(self):
         puzzle = Graph(Node([
@@ -216,7 +216,7 @@ class TestGraphMethods(unittest.TestCase):
         self.assertEqual(expected_result, result_node)
         if PRINT_DESCRIPTIONS:
             print('test case one hundred seven:')
-            print(result_node.description_of_moves)
+            print(result_node.description_of_moves())
 
 
 if __name__ == '__main__':

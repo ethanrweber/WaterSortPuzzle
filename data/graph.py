@@ -57,7 +57,7 @@ class Graph:
                     # deepcopy node
                     copy_node = deepcopy(start_node)
                     # move liquid in copied node and update path description
-                    copy_node.description_of_moves += f"Moved liquid from Tube {i + 1} ({tube_one}) to Tube {j + 1} ({tube_two})\n"
+                    copy_node.move_list += [(i, j)]
                     copy_node.data[i].move_liquid(copy_node.data[j])
                     # recurse solve
                     result, final_node = self.solve(copy_node, path + [copy_node])
@@ -67,7 +67,7 @@ class Graph:
                     # deepcopy node
                     copy_node = deepcopy(start_node)
                     # move liquid in copied node
-                    copy_node.description_of_moves += f"Moved liquid from Tube {j + 1} ({tube_two}) to Tube {i + 1} ({tube_one})\n"
+                    copy_node.move_list += [(i, j)]
                     copy_node.data[j].move_liquid(copy_node.data[i])
                     # recurse solve
                     result, final_node = self.solve(copy_node, path + [copy_node])

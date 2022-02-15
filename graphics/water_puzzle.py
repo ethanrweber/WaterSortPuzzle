@@ -95,11 +95,13 @@ def detect_tube_target_and_deselection(target_tube_graphic: TubeGraphic, selecte
 
 def detect_interactions(tube_graphics: List[TubeGraphic]):
     any_tube_selected = any(tg.is_selected for tg in tube_graphics)
+    if any_tube_selected:
+        selected_tube_graphic = [tg for tg in tube_graphics if tg.is_selected][0]
+
     for tube_graphic in tube_graphics:
         # only one tube can be selected at a time
         # if a tube is already selected, watch for another tube selection as the target tube to transfer liquids
         if any_tube_selected:
-            selected_tube_graphic = [tg for tg in tube_graphics if tg.is_selected][0]
             detect_tube_target_and_deselection(tube_graphic, selected_tube_graphic)
         else:
             detect_tube_selection(tube_graphic)
@@ -134,10 +136,18 @@ def draw_tubes(tube_graphics: List[TubeGraphic]):
         draw_tube_colors(tube_graphic)
 
 
-def draw_window(tube_graphics: List[TubeGraphic]):
+def draw_move_text(move_count: int):
+    font = pg.font.SysFont('helvetica', 25)
+    draw_text = font.render("Move Count: " + str(move_count), True, COLORS["BLACK"])
+    padding = 20
+    window.blit(draw_text, (padding, HEIGHT - padding - draw_text.get_height()))
+
+
+def draw_window(tube_graphics: List[TubeGraphic], move_count: int):
     # set background color
     window.fill(BACKGROUND_COLOR)
 
+    draw_move_text(move_count)
     draw_tubes(tube_graphics)
 
     pg.display.update()
@@ -169,13 +179,14 @@ def main():
                 detect_interactions(tube_graphics)
             # this event is fired when liquid is transferred from one tube to another
             if event.type == UPDATE_TUBE_EVENT:
+                move_counter += 1
                 for tg in tube_graphics:
                     tg.recreate_color_graphics()
                 all_solved = all(tg.tube.is_solved() for tg in tube_graphics)
                 if all_solved:
                     game_solved = True
 
-        draw_window(tube_graphics)
+        draw_window(tube_graphics, move_counter)
 
         if game_solved:
             draw_win_text()

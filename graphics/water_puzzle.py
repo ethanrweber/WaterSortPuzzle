@@ -2,7 +2,11 @@ from typing import List
 
 import pygame as pg
 
+import pygame_widgets
+from pygame_widgets.button import Button
+
 from constants import FPS, COLORS, EMPTY_SYMBOL
+from data.graph import Graph
 from data.node import Node
 from data.tube import Tube
 from graphics.tube_graphic import TubeGraphic
@@ -36,6 +40,13 @@ space_between_tubes = remaining_space // (n + 1)
 
 # custom events:
 UPDATE_TUBE_EVENT = pg.USEREVENT + 1
+SOLVE_BUTTON_EVENT = pg.USEREVENT + 2
+
+# widgets:
+solve_button = Button(
+    window, (WIDTH * 9 // 10), (HEIGHT * 9 // 10), (WIDTH * 1 // 15), (HEIGHT * 1 // 15),
+    text="Solve", fontSize=30, onClick=lambda: pg.event.post(pg.event.Event(SOLVE_BUTTON_EVENT))
+)
 
 
 def create_tube_graphics(puzzle: Node):
@@ -143,13 +154,14 @@ def draw_move_text(move_count: int):
     window.blit(draw_text, (padding, HEIGHT - padding - draw_text.get_height()))
 
 
-def draw_window(tube_graphics: List[TubeGraphic], move_count: int):
+def draw_window(events, tube_graphics: List[TubeGraphic], move_count: int):
     # set background color
     window.fill(BACKGROUND_COLOR)
 
     draw_move_text(move_count)
     draw_tubes(tube_graphics)
 
+    pygame_widgets.update(events)
     pg.display.update()
 
 
@@ -162,21 +174,46 @@ def draw_win_text():
 
 
 def main():
-    tube_graphics = create_tube_graphics(GAME_PUZZLE)
-    move_counter = 0
+    # handling stuff for animating the solving of the puzzle
+    solve_button_pressed = False
+    puzzle_graph = None
+    puzzle_solver_attempted = False
+    solved_node = None
+    solved_node_move_index = 0
 
     # game setup
+    tube_graphics = create_tube_graphics(GAME_PUZZLE)
+    move_counter = 0
     clock = pg.time.Clock()
     run = True
     while run:
         clock.tick(FPS)
 
+        # if the solve button has been pressed and the puzzle has been created but not yet solved, solve it
+        if solve_button_pressed and puzzle_graph is not None and not puzzle_solver_attempted:
+            puzzle_solver_attempted = True
+            result, final_node = puzzle_graph.solve(puzzle_graph.start_node, [])
+            if result:
+                solved_node = final_node
+
+        # if the puzzle has been solved (through the solve button), display each move for 1.5s
+        if solved_node is not None and solved_node_move_index < len(solved_node.move_list):
+            i, j = solved_node.move_list[solved_node_move_index]
+            tube_graphics[i].tube.move_liquid(tube_graphics[j].tube)
+            for tg in tube_graphics:
+                tg.recreate_color_graphics()
+
+            solved_node_move_index += 1
+            pg.time.delay(1500)
+
         game_solved = False
-        for event in pg.event.get():
+        events = pg.event.get()
+        for event in events:
             if event.type == pg.QUIT:
                 run = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 detect_interactions(tube_graphics)
+
             # this event is fired when liquid is transferred from one tube to another
             if event.type == UPDATE_TUBE_EVENT:
                 move_counter += 1
@@ -186,7 +223,12 @@ def main():
                 if all_solved:
                     game_solved = True
 
-        draw_window(tube_graphics, move_counter)
+            if event.type == SOLVE_BUTTON_EVENT:
+                solve_button_pressed = True
+                puzzle_graph = Graph(GAME_PUZZLE)
+
+
+        draw_window(events, tube_graphics, move_counter)
 
         if game_solved:
             draw_win_text()

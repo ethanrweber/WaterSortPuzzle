@@ -14,8 +14,6 @@ class Graph:
 
         self.final_node = self.generate_final_state()
 
-        self.vertices = [self.start_node, self.final_node]
-
     def generate_final_state(self):
         # build the final state of the graph from the start state
         colors = set()
@@ -67,7 +65,7 @@ class Graph:
                     # deepcopy node
                     copy_node = deepcopy(start_node)
                     # move liquid in copied node
-                    copy_node.move_list += [(i, j)]
+                    copy_node.move_list += [(j, i)]
                     copy_node.data[j].move_liquid(copy_node.data[i])
                     # recurse solve
                     result, final_node = self.solve(copy_node, path + [copy_node])

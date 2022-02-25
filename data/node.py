@@ -22,8 +22,10 @@ class Node:
         return ''.join(sorted(str(tube) for tube in self.data))
 
     def __eq__(self, other):
-        # Node other may have Tubes swapped but with the same values, so string comparison is the most straightforward
-        return str(self) == str(other)
+        for t in self.data:
+            if t not in other.data:
+                return False
+        return True
 
     def __hash__(self):
         return hash(str(self))

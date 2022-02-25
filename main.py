@@ -1,3 +1,6 @@
+import cProfile
+
+import puzzles.puzzles
 from constants import TUBE_HEIGHT, EMPTY_SYMBOL
 from data.graph import Graph
 from data.node import Node
@@ -36,16 +39,17 @@ def receive_input():
 
 
 if __name__ == '__main__':
-    puzzle_graph = receive_input()
-
+    # puzzle_graph = receive_input()
+    puzzle_graph = Graph(puzzles.puzzles.puzzle_100)
     print('data inputted:')
     print(puzzle_graph.start_node)
 
     print('solve:')
-    result, final_node = puzzle_graph.solve(puzzle_graph.start_node, [])
-    if result:
-        print('solved successfully:')
-        print(final_node.description_of_moves())
+    cProfile.run('puzzle_graph.solve(puzzle_graph.start_node, [])')
+    # result, final_node = puzzle_graph.solve(puzzle_graph.start_node, [])
+    # if result:
+    #     print('solved successfully:')
+    #     print(final_node.description_of_moves())
 
     # print('solved state:')
     # print(puzzle_graph.final_node)

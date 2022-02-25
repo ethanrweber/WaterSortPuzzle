@@ -26,13 +26,22 @@ TUBE_BORDER_RADIUS = TUBE_GRAPHIC_WIDTH // 2
 TUBE_VISUAL_INDICATOR_OFFSET = 20
 
 # todo: make this selectable on another screen from a list of puzzles
+# GAME_PUZZLE = Node([
+#     Tube(['BLUE', 'BLUE', 'ORANGE', 'MINT_GREEN']),
+#     Tube(['ORANGE', 'ORANGE', 'BLUE', 'ORANGE']),
+#     Tube(['MINT_GREEN', 'MINT_GREEN', 'MINT_GREEN', 'BLUE']),
+#     Tube([]),
+#     Tube([])
+# ], 5, 2)
 GAME_PUZZLE = Node([
-    Tube(['BLUE', 'BLUE', 'ORANGE', 'MINT_GREEN']),
-    Tube(['ORANGE', 'ORANGE', 'BLUE', 'ORANGE']),
-    Tube(['MINT_GREEN', 'MINT_GREEN', 'MINT_GREEN', 'BLUE']),
-    Tube([]),
-    Tube([])
-], 5, 2)
+            Tube(['ORANGE', 'ORANGE', 'BROWN', 'RED']),
+            Tube(['BEIGE', 'MINT_GREEN', 'MINT_GREEN', 'BROWN']),
+            Tube(['ORANGE', 'RED', 'MINT_GREEN', 'MINT_GREEN']),
+            Tube(['BEIGE', 'RED', 'RED', 'BEIGE']),
+            Tube(['BROWN', 'ORANGE', 'BEIGE', 'BROWN']),
+            Tube([]),
+            Tube([])
+        ], 7, 2)
 
 n = len(GAME_PUZZLE.data)
 remaining_space = WIDTH - (n * TUBE_GRAPHIC_WIDTH)
@@ -176,7 +185,6 @@ def draw_win_text():
 def main():
     # handling stuff for animating the solving of the puzzle
     solve_button_pressed = False
-    puzzle_graph = None
     puzzle_solver_attempted = False
     solved_node = None
     solved_node_move_index = 0
@@ -190,9 +198,9 @@ def main():
         clock.tick(FPS)
 
         # if the solve button has been pressed and the puzzle has been created but not yet solved, solve it
-        if solve_button_pressed and puzzle_graph is not None and not puzzle_solver_attempted:
+        if solve_button_pressed and not puzzle_solver_attempted:
             puzzle_solver_attempted = True
-            result, final_node = puzzle_graph.solve(puzzle_graph.start_node, [])
+            result, final_node = Graph.solve(GAME_PUZZLE, [])
             if result:
                 solved_node = final_node
 
@@ -203,10 +211,10 @@ def main():
             for tg in tube_graphics:
                 tg.recreate_color_graphics()
 
+            move_counter += 1
             solved_node_move_index += 1
             pg.time.delay(1500)
 
-        game_solved = False
         events = pg.event.get()
         for event in events:
             if event.type == pg.QUIT:
@@ -219,17 +227,13 @@ def main():
                 move_counter += 1
                 for tg in tube_graphics:
                     tg.recreate_color_graphics()
-                all_solved = all(tg.tube.is_solved() for tg in tube_graphics)
-                if all_solved:
-                    game_solved = True
 
             if event.type == SOLVE_BUTTON_EVENT:
                 solve_button_pressed = True
-                puzzle_graph = Graph(GAME_PUZZLE)
-
 
         draw_window(events, tube_graphics, move_counter)
 
+        game_solved = GAME_PUZZLE.is_solved()
         if game_solved:
             draw_win_text()
             pg.time.delay(5000)

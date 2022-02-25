@@ -31,7 +31,8 @@ class Graph:
 
         return Node(final_tubes, self.tube_count, number_empty_tubes)
 
-    def solve(self, start_node: Node, path: List[Node]) -> (bool, Node):
+    @staticmethod
+    def solve(start_node: Node, path: List[Node]) -> (bool, Node):
         """
         solves the puzzle
         :param start_node:
@@ -58,7 +59,7 @@ class Graph:
                     copy_node.move_list += [(i, j)]
                     copy_node.data[i].move_liquid(copy_node.data[j])
                     # recurse solve
-                    result, final_node = self.solve(copy_node, path + [copy_node])
+                    result, final_node = Graph.solve(copy_node, path + [copy_node])
                     if result:
                         return True, final_node
                 if tube_two.can_move_liquid_into(tube_one):
@@ -68,7 +69,7 @@ class Graph:
                     copy_node.move_list += [(j, i)]
                     copy_node.data[j].move_liquid(copy_node.data[i])
                     # recurse solve
-                    result, final_node = self.solve(copy_node, path + [copy_node])
+                    result, final_node = Graph.solve(copy_node, path + [copy_node])
                     if result:
                         return True, final_node
 

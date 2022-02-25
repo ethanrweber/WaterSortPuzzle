@@ -5,7 +5,8 @@ from data.tube import Tube
 
 
 class Node:
-    def __init__(self, tube_array: List[Tube], tube_count, empty_tube_count):
+    def __init__(self, tube_array: List[Tube], tube_count, empty_tube_count, num_id=0):
+        self.num_id = num_id
         self.data = tube_array
         self.tube_count = tube_count
         self.empty_tube_count = empty_tube_count

@@ -63,7 +63,8 @@ class Tube:
         determine if liquid can be moved from Tube self to Tube other
         making a move:
             - liquid cannot be moved into nor out of a filled tube
-            - liquid can be moved from one tube to another tube if the liquid at the top of both of tubes is the same type
+            - liquid can be moved from one tube to another tube
+                if the liquid at the top of both of tubes is the same type
             - when performing a move, as much of the liquid of the same type at the top of the tube is
                 transferred to the other tube, as long as the target tube has the capacity to hold the liquid
         :param other: the target Tube

@@ -2,6 +2,7 @@ import unittest
 from data.tube import Tube
 from constants import EMPTY_SYMBOL
 
+
 # Some test cases assume constants.TUBE_HEIGHT = 4
 class TestTubeMethods(unittest.TestCase):
     # Test cases for Tube.is_solved()
@@ -52,7 +53,6 @@ class TestTubeMethods(unittest.TestCase):
         tube = Tube([])
         color, color_height, color_base = tube.top()
         self.assertEqual(color_base, len(tube.data) - 1)
-
 
     # Test cases for Tube.can_move_liquid_into()
     def test_can_move_liquid_from_tube_to_tube_of_equal_height(self):

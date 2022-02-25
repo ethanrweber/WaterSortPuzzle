@@ -2,63 +2,19 @@ from typing import List
 
 import pygame as pg
 
-import pygame_widgets
-from pygame_widgets.button import Button
-
-from constants import FPS, COLORS, EMPTY_SYMBOL
-from data.graph import Graph
+from constants import WIDTH, HEIGHT, TUBE_GRAPHIC_WIDTH, TUBE_GRAPHIC_HEIGHT, TUBE_BORDER_WIDTH, TUBE_BORDER_RADIUS, \
+    TUBE_VISUAL_INDICATOR_OFFSET, UPDATE_TUBE_EVENT, COLORS, BACKGROUND_COLOR
 from data.node import Node
-from data.tube import Tube
 from graphics.tube_graphic import TubeGraphic
 
-pg.font.init()
 
-pg.display.set_caption("Water Sorting Puzzle")
-WIDTH, HEIGHT = WINDOW_SIZE = (900, 600)
-window = pg.display.set_mode(WINDOW_SIZE, pg.RESIZABLE)
+def create_tube_graphics(puzzle: Node) -> List[TubeGraphic]:
+    # graphics setup
+    n = len(puzzle.data)
 
-BACKGROUND_COLOR = COLORS["GRAY"]
-COLORS[EMPTY_SYMBOL] = BACKGROUND_COLOR
+    remaining_space = WIDTH - (n * TUBE_GRAPHIC_WIDTH)
+    space_between_tubes = remaining_space // (n + 1)
 
-TUBE_GRAPHIC_WIDTH, TUBE_GRAPHIC_HEIGHT = WIDTH // 10, HEIGHT // 2
-TUBE_BORDER_WIDTH = 5
-TUBE_BORDER_RADIUS = TUBE_GRAPHIC_WIDTH // 2
-TUBE_VISUAL_INDICATOR_OFFSET = 20
-
-# todo: make this selectable on another screen from a list of puzzles
-# GAME_PUZZLE = Node([
-#     Tube(['BLUE', 'BLUE', 'ORANGE', 'MINT_GREEN']),
-#     Tube(['ORANGE', 'ORANGE', 'BLUE', 'ORANGE']),
-#     Tube(['MINT_GREEN', 'MINT_GREEN', 'MINT_GREEN', 'BLUE']),
-#     Tube([]),
-#     Tube([])
-# ], 5, 2)
-GAME_PUZZLE = Node([
-            Tube(['ORANGE', 'ORANGE', 'BROWN', 'RED']),
-            Tube(['BEIGE', 'MINT_GREEN', 'MINT_GREEN', 'BROWN']),
-            Tube(['ORANGE', 'RED', 'MINT_GREEN', 'MINT_GREEN']),
-            Tube(['BEIGE', 'RED', 'RED', 'BEIGE']),
-            Tube(['BROWN', 'ORANGE', 'BEIGE', 'BROWN']),
-            Tube([]),
-            Tube([])
-        ], 7, 2)
-
-n = len(GAME_PUZZLE.data)
-remaining_space = WIDTH - (n * TUBE_GRAPHIC_WIDTH)
-space_between_tubes = remaining_space // (n + 1)
-
-# custom events:
-UPDATE_TUBE_EVENT = pg.USEREVENT + 1
-SOLVE_BUTTON_EVENT = pg.USEREVENT + 2
-
-# widgets:
-solve_button = Button(
-    window, (WIDTH * 9 // 10), (HEIGHT * 9 // 10), (WIDTH * 1 // 15), (HEIGHT * 1 // 15),
-    text="Solve", fontSize=30, onClick=lambda: pg.event.post(pg.event.Event(SOLVE_BUTTON_EVENT))
-)
-
-
-def create_tube_graphics(puzzle: Node):
     # draw the tubes in start node
     tube_graphics = []
 
@@ -122,12 +78,13 @@ def detect_interactions(tube_graphics: List[TubeGraphic]):
         # only one tube can be selected at a time
         # if a tube is already selected, watch for another tube selection as the target tube to transfer liquids
         if any_tube_selected:
+            # noinspection PyUnboundLocalVariable
             detect_tube_target_and_deselection(tube_graphic, selected_tube_graphic)
         else:
             detect_tube_selection(tube_graphic)
 
 
-def draw_tube_colors(tube_graphic):
+def draw_tube_colors(window, tube_graphic):
     for color_idx, color_rect in enumerate(tube_graphic.color_graphics):
         # draw the color inside the tube's borders
         drawing_last_color = color_idx == len(tube_graphic.tube.data) - 1
@@ -143,7 +100,7 @@ def draw_tube_colors(tube_graphic):
             pg.draw.rect(window, color, color_rect)
 
 
-def draw_tubes(tube_graphics: List[TubeGraphic]):
+def draw_tubes(window, tube_graphics: List[TubeGraphic]):
     for tube_graphic in tube_graphics:
         # draw the tube outline
         pg.draw.rect(window, COLORS["BLACK"], tube_graphic.tube_graphic, width=TUBE_BORDER_WIDTH,
@@ -153,93 +110,27 @@ def draw_tubes(tube_graphics: List[TubeGraphic]):
         pg.draw.rect(window, BACKGROUND_COLOR, tube_graphic.tube_graphic_top_cover)
 
         # draw the colors inside the tube
-        draw_tube_colors(tube_graphic)
+        draw_tube_colors(window, tube_graphic)
 
 
-def draw_move_text(move_count: int):
+def draw_move_text(window, move_count: int):
     font = pg.font.SysFont('helvetica', 25)
     draw_text = font.render("Move Count: " + str(move_count), True, COLORS["BLACK"])
     padding = 20
     window.blit(draw_text, (padding, HEIGHT - padding - draw_text.get_height()))
 
 
-def draw_window(events, tube_graphics: List[TubeGraphic], move_count: int):
+def draw_window(window, tube_graphics: List[TubeGraphic], move_count: int):
     # set background color
     window.fill(BACKGROUND_COLOR)
 
-    draw_move_text(move_count)
-    draw_tubes(tube_graphics)
-
-    pygame_widgets.update(events)
-    pg.display.update()
+    draw_move_text(window, move_count)
+    draw_tubes(window, tube_graphics)
 
 
 # occurs outside main draw_window game loop
-def draw_win_text():
+def draw_win_text(window, text: str):
     font = pg.font.SysFont('comicsans', 100)
-    draw_text = font.render('YOU WON!', True, COLORS["WHITE"])
+    draw_text = font.render(text, True, COLORS["WHITE"])
     window.blit(draw_text, ((WIDTH - draw_text.get_width()) // 2, (HEIGHT - draw_text.get_height()) // 2))
     pg.display.update()
-
-
-def main():
-    # handling stuff for animating the solving of the puzzle
-    solve_button_pressed = False
-    puzzle_solver_attempted = False
-    solved_node = None
-    solved_node_move_index = 0
-
-    # game setup
-    tube_graphics = create_tube_graphics(GAME_PUZZLE)
-    move_counter = 0
-    clock = pg.time.Clock()
-    run = True
-    while run:
-        clock.tick(FPS)
-
-        # if the solve button has been pressed and the puzzle has been created but not yet solved, solve it
-        if solve_button_pressed and not puzzle_solver_attempted:
-            puzzle_solver_attempted = True
-            result, final_node = Graph.solve(GAME_PUZZLE, [])
-            if result:
-                solved_node = final_node
-
-        # if the puzzle has been solved (through the solve button), display each move for 1.5s
-        if solved_node is not None and solved_node_move_index < len(solved_node.move_list):
-            i, j = solved_node.move_list[solved_node_move_index]
-            tube_graphics[i].tube.move_liquid(tube_graphics[j].tube)
-            for tg in tube_graphics:
-                tg.recreate_color_graphics()
-
-            move_counter += 1
-            solved_node_move_index += 1
-            pg.time.delay(1500)
-
-        events = pg.event.get()
-        for event in events:
-            if event.type == pg.QUIT:
-                run = False
-            if event.type == pg.MOUSEBUTTONDOWN:
-                detect_interactions(tube_graphics)
-
-            # this event is fired when liquid is transferred from one tube to another
-            if event.type == UPDATE_TUBE_EVENT:
-                move_counter += 1
-                for tg in tube_graphics:
-                    tg.recreate_color_graphics()
-
-            if event.type == SOLVE_BUTTON_EVENT:
-                solve_button_pressed = True
-
-        draw_window(events, tube_graphics, move_counter)
-
-        game_solved = GAME_PUZZLE.is_solved()
-        if game_solved:
-            draw_win_text()
-            pg.time.delay(5000)
-            run = False
-
-
-if __name__ == '__main__':
-    main()
-    pg.quit()

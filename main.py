@@ -15,8 +15,10 @@ def receive_input():
     # make an array of tubes filled with the user-inputted number of empty tubes
     tubes = [Tube([EMPTY_SYMBOL] * TUBE_HEIGHT)] * empty_tube_count
 
-    print("enter each color in the tube from top to bottom, accounting for each quarter of the tube length, separated by spaces.")
-    print("for example, a tube might be half blue at the top and half red at the bottom, so enter \"blue blue red red\"")
+    print("enter each color in the tube from top to bottom, "
+          "accounting for each quarter of the tube length, separated by spaces.")
+    print("for example, a tube might be half blue at the top and half red at the bottom, "
+          "so enter \"blue blue red red\"")
     for i in range(non_empty_tube_count):
         print(f'Tube {i} of {non_empty_tube_count} (non empty tubes):')
         input_data = input().split()

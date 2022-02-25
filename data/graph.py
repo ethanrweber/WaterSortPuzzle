@@ -32,7 +32,7 @@ class Graph:
         return Node(final_tubes, self.tube_count, number_empty_tubes)
 
     @staticmethod
-    def solve(start_node: Node, path: List[Node]) -> (bool, Node):
+    def solve(start_node: Node, path: List[Node] = []) -> (bool, Node):
         """
         solves the puzzle
         :param start_node:
@@ -74,4 +74,3 @@ class Graph:
                         return True, final_node
 
         return False, path[-1]
-

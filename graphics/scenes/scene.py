@@ -4,9 +4,8 @@
 
 import pygame
 
-import puzzles.puzzles
 from constants import WIDTH, HEIGHT, FPS, DEBUG_LOGGING
-import graphics.scenes.puzzle.puzzle_scene as puzzle_scene
+import graphics.scenes.title.title_scene as title_scene
 
 
 class SceneBase:
@@ -35,24 +34,6 @@ class SceneBase:
 
     def Terminate(self):
         self.SwitchToScene(None)
-
-
-class TitleScene(SceneBase):
-    def __init__(self):
-        SceneBase.__init__(self)
-
-    def ProcessInput(self, events, pressed_keys):
-        for event in events:
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                # Move to the next scene when the user pressed Enter
-                self.SwitchToScene(puzzle_scene.PuzzleScene(puzzles.puzzles.puzzle_1))
-
-    def Update(self):
-        pass
-
-    def Render(self, screen, events):
-        # For the sake of brevity, the title scene is a blank red screen
-        screen.fill((255, 0, 0))
 
 
 def run_game(width, height, fps, starting_scene):
@@ -107,4 +88,4 @@ def run_game(width, height, fps, starting_scene):
 
 
 if __name__ == '__main__':
-    run_game(WIDTH, HEIGHT, FPS, TitleScene())
+    run_game(WIDTH, HEIGHT, FPS, title_scene.TitleScene())

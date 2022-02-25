@@ -19,7 +19,17 @@ def create_tube_graphics(puzzle: Node) -> List[TubeGraphic]:
     tube_graphics = []
 
     tube_x = space_between_tubes
-    tube_y = HEIGHT // 4
+    tube_y = HEIGHT // 8
+
+    # determine whether to draw tubes all on one line or on multiple rows
+    multiple_rows = len(puzzle.data) >= 10
+    tube_row_delimiter = len(puzzle.data) // 2 - 1
+    multiple_row_offset = WIDTH // 8 + space_between_tubes
+
+    if multiple_rows:
+        space_between_tubes *= 2
+        tube_x = multiple_row_offset
+
     # draw each tube
     for tube_idx, tube in enumerate(puzzle.data):
         tube_graphic = TubeGraphic(
@@ -32,7 +42,12 @@ def create_tube_graphics(puzzle: Node) -> List[TubeGraphic]:
             visual_indicator_offset=TUBE_VISUAL_INDICATOR_OFFSET
         )
 
-        tube_x += TUBE_GRAPHIC_WIDTH + space_between_tubes
+        # go to next row
+        if multiple_rows and tube_idx == tube_row_delimiter:
+            tube_x = multiple_row_offset
+            tube_y += TUBE_GRAPHIC_HEIGHT + space_between_tubes
+        else:
+            tube_x += TUBE_GRAPHIC_WIDTH + space_between_tubes
         tube_graphics.append(tube_graphic)
     return tube_graphics
 
@@ -129,8 +144,8 @@ def draw_window(window, tube_graphics: List[TubeGraphic], move_count: int):
 
 
 # occurs outside main draw_window game loop
-def draw_win_text(window, text: str):
-    font = pg.font.SysFont('comicsans', 100)
+def draw_text_center_screen(window, text: str, font: str = 'comicsans', font_size: int = 100):
+    font = pg.font.SysFont(font, font_size)
     draw_text = font.render(text, True, COLORS["WHITE"])
     window.blit(draw_text, ((WIDTH - draw_text.get_width()) // 2, (HEIGHT - draw_text.get_height()) // 2))
     pg.display.update()

@@ -10,7 +10,7 @@ FPS = 15
 # define all the colors used as RGB values
 COLORS = {
     "BLACK": (0, 0, 0),
-    "GRAY": (127, 127, 127),
+    "GRAY": (63, 63, 63),
     "WHITE": (255, 255, 255),
     "BLUE": (0, 0, 255),
     "ORANGE": (255, 215, 0),
@@ -25,6 +25,7 @@ COLORS = {
     "CYAN": (0, 255, 255),
     "PURPLE": (128, 0, 128),
     "INDIGO": (75, 0, 130),
+    "VIOLET": (138, 43, 226),
     EMPTY_SYMBOL: (127, 127, 127)  # GRAY - default background color
 }
 
@@ -32,9 +33,9 @@ COLORS = {
 BACKGROUND_COLOR = COLORS[EMPTY_SYMBOL]
 
 # graphics constants
-WIDTH, HEIGHT = WINDOW_SIZE = (900, 600)
+WIDTH, HEIGHT = WINDOW_SIZE = (1600, 900)
 
-TUBE_GRAPHIC_WIDTH, TUBE_GRAPHIC_HEIGHT = WIDTH // 10, HEIGHT // 2
+TUBE_GRAPHIC_WIDTH, TUBE_GRAPHIC_HEIGHT = WIDTH // 16, HEIGHT // 3
 TUBE_BORDER_WIDTH = 5
 TUBE_BORDER_RADIUS = TUBE_GRAPHIC_WIDTH // 2
 TUBE_VISUAL_INDICATOR_OFFSET = 20

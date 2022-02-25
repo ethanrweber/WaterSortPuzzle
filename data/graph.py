@@ -73,4 +73,4 @@ class Graph:
                     if result:
                         return True, final_node
 
-        return False, path[-1]
+        return False, None

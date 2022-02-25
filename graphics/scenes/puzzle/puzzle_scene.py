@@ -5,7 +5,7 @@ from pygame_widgets.button import Button
 
 from constants import UPDATE_TUBE_EVENT, HINT_BUTTON_EVENT, WIDTH, HEIGHT, DEBUG_LOGGING
 from data.graph import Graph
-from graphics.scenes.puzzle.puzzle_renderer import create_tube_graphics, detect_interactions, draw_window, draw_win_text
+from graphics.scenes.puzzle.puzzle_renderer import create_tube_graphics, detect_interactions, draw_window, draw_text_center_screen
 from graphics.scenes.scene import SceneBase
 from data.node import Node
 
@@ -28,6 +28,7 @@ class PuzzleScene(SceneBase):
 
         # auto solver stuff
         self.puzzle_solved = False
+        self.puzzle_failed = False
         self.hint_button_pressed = False
         self.puzzle_solver_attempted = False
         self.solved_node_move_index = 0
@@ -69,7 +70,8 @@ class PuzzleScene(SceneBase):
                 if DEBUG_LOGGING:
                     print("solved puzzle")
                 self.solved_node = final_node
-            # else: TODO: display error message or something
+            else:
+                self.puzzle_failed = True
 
         # if the puzzle has been solved (through the hint button), display each move for 1.5s
         if self.hint_button_pressed and \
@@ -106,7 +108,14 @@ class PuzzleScene(SceneBase):
         if self.puzzle_solved:
             if DEBUG_LOGGING:
                 print("puzzle_solved - win!")
-            draw_win_text(screen, 'YOU WON!')
+            draw_text_center_screen(screen, 'YOU WON!')
+            pg.time.delay(5000)
+            self.Terminate()
+
+        if self.puzzle_failed:
+            if DEBUG_LOGGING:
+                print("puzzle_failed - lose :(")
+            draw_text_center_screen(screen, 'Puzzle failed, restart!')
             pg.time.delay(5000)
             self.Terminate()
 

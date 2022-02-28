@@ -5,7 +5,7 @@ import pygame as pg
 from constants import WIDTH, HEIGHT, TUBE_GRAPHIC_WIDTH, TUBE_GRAPHIC_HEIGHT, TUBE_BORDER_WIDTH, TUBE_BORDER_RADIUS, \
     TUBE_VISUAL_INDICATOR_OFFSET, UPDATE_TUBE_EVENT, COLORS, BACKGROUND_COLOR
 from data.node import Node
-from graphics.tube_graphic import TubeGraphic
+from graphics.graphics_objects.tube_graphic import TubeGraphic
 
 
 def create_tube_graphics(puzzle: Node) -> List[TubeGraphic]:

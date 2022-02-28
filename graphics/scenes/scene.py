@@ -3,6 +3,7 @@
 # The first half is just boiler-plate stuff...
 
 import pygame
+import logging
 
 from constants import WIDTH, HEIGHT, FPS, DEBUG_LOGGING
 import graphics.scenes.title.title_scene as title_scene
@@ -29,25 +30,33 @@ class SceneBase:
 
         print("uh-oh, you didn't override this in the child class")
 
+    def ClearWidgets(self):
+        print("uh-oh, you didn't override this in the child class")
+
     def SwitchToScene(self, next_scene):
+        self.ClearWidgets()
         self.next = next_scene
 
     def Terminate(self):
+        logging.info("Terminate Scene (end game)")
         self.SwitchToScene(None)
 
 
 def run_game(width, height, fps, starting_scene):
+    logging.info("run game")
     pygame.init()
-    screen = pygame.display.set_mode((width, height))
+    pygame.font.init()
+    logging.debug(f"instantiate game window: {width}x{height}")
+    screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
     clock = pygame.time.Clock()
 
     active_scene = starting_scene
 
+    logging.info("begin main game loop")
     while active_scene is not None:
         active_scene_class_name = active_scene.__class__.__name__
-        #
-        if DEBUG_LOGGING:
-            print("tick scene")
+        logging.info("tick scene: " + active_scene_class_name)
+
         pressed_keys = pygame.key.get_pressed()
 
         # Event filtering
@@ -65,20 +74,18 @@ def run_game(width, height, fps, starting_scene):
                     quit_attempt = True
 
             if quit_attempt:
-                if DEBUG_LOGGING:
-                    print("quit game")
+                logging.info("attempting to quit game")
                 active_scene.Terminate()
             else:
                 filtered_events.append(event)
 
-        if DEBUG_LOGGING:
-            print(active_scene_class_name + ": Process Input")
+        logging.info(active_scene_class_name + ": ProcessInput()")
         active_scene.ProcessInput(filtered_events, pressed_keys)
-        if DEBUG_LOGGING:
-            print(active_scene_class_name + ": Update Scene")
+
+        logging.info(active_scene_class_name + ": Update()")
         active_scene.Update()
-        if DEBUG_LOGGING:
-            print(active_scene_class_name + ": Render Scene")
+
+        logging.info(active_scene_class_name + ": Render()")
         active_scene.Render(screen, filtered_events)
 
         active_scene = active_scene.next
@@ -88,4 +95,10 @@ def run_game(width, height, fps, starting_scene):
 
 
 if __name__ == '__main__':
+    # instantiate logger
+    logging_level = logging.DEBUG if DEBUG_LOGGING else logging.WARNING
+    logging.basicConfig(filename="water_sort_puzzle.log", level=logging_level)
+    logging.info("Run game")
+    # gameplay
     run_game(WIDTH, HEIGHT, FPS, title_scene.TitleScene())
+    logging.info("End game")

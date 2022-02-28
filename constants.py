@@ -40,7 +40,22 @@ TUBE_BORDER_WIDTH = 5
 TUBE_BORDER_RADIUS = TUBE_GRAPHIC_WIDTH // 2
 TUBE_VISUAL_INDICATOR_OFFSET = 20
 
-# pygame events
+PUZZLES_PER_ROW = 4
+PUZZLES_PER_COLUMN = 4
+PUZZLES_PER_PAGE = PUZZLES_PER_ROW * PUZZLES_PER_COLUMN
 
-UPDATE_TUBE_EVENT = pg.USEREVENT + 1
-HINT_BUTTON_EVENT = pg.USEREVENT + 2
+# pygame events
+user_event_offset = 0
+
+def define_event():
+    global user_event_offset
+    user_event_offset += 1
+    return pg.USEREVENT + user_event_offset
+
+
+# title_scene events
+PUZZLE_SELECTION_EVENT = define_event()
+
+# puzzle_scene events
+UPDATE_TUBE_EVENT = define_event()
+HINT_BUTTON_EVENT = define_event()

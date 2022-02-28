@@ -24,10 +24,10 @@ class TubeGraphic:
                                                                      tube_border_width)
         self.is_selected = False
 
-    def recreate_color_graphics(self):
-        self.color_graphics = self.get_color_graphics(self.tube_x, self.tube_y,
-                                                      self.tube_graphic_width, self.tube_graphic_height,
-                                                      self.tube_border_width)
+    # def recreate_color_graphics(self):
+    #     self.color_graphics = self.get_color_graphics(self.tube_x, self.tube_y,
+    #                                                   self.tube_graphic_width, self.tube_graphic_height,
+    #                                                   self.tube_border_width)
 
     def get_color_graphics(self, tube_x, tube_y, tube_graphic_width, tube_graphic_height, tube_border_width):
         # draw the liquids at each quarter of the tube from top to bottom
